@@ -1,0 +1,65 @@
+=========== API FOLDER =======
+all file code compelete 
+
+
+========== COMPONENTS ========
+1. ADMIN FOLDER 
+   src/components/admin/PhotoApproval.jsx  
+
+2. AUTH FOLDER 
+    src/components/auth/ForgotPasswordForm.jsx
+    src/components/authRegisteForm.jsx
+
+3. COMMON FOLDER
+    src/components/common/Card.jsx
+   src/components/common/Input.jsx
+   src/components/common/Model.jsx
+
+4. GOOGLEPHOTOS
+   src/components/googlePhotos/PhotoApproval.jsx
+
+5. PHOTOS
+   src/components/photos/PhotosDetail.jsx
+   src/components/photos/WatermarkedImage.jsx
+
+6. PLACE
+   src/components/places/placeCard.jsx
+   src/components/places/placeDetail.jsx
+   src/components/places/EarthViewer3D.jsx (IF NEEDED but i am use leaflet)
+
+
+============== HOOKS FOLDER =========== 
+ 1. src/hooks/useAdmin.js
+ 2. src/hooks/useAuth.js 
+ 3. src/hooks/useBlogs.js 
+ 4. src/hooks/usePhotos.js 
+ 5. src/hooks/usePlaces.js 
+ 6. src/hooks/useWallet.js
+
+ =============== PAGE FOLDER ============ 
+ 1. src/pages/BlogDetailPage.jsx
+ 2. src/pages/GooglePhotosSyncPage.jsx
+ 3. src/pages/MyPhotosPage.jsx
+ 4. src/pages/ProfilePage.jsx
+ 5. src/pages/UploadPhotoPage.jsx
+ 6. src/pages/WriteBlogPage.jsx
+
+ =============== STORE FOLDER ============== 
+  1. src/stord/photoStore.js
+  2. src/store/uiStore.js
+
+================== STYLE ================ 
+1. src/style/Globals.css
+
+
+================== UTILS ============ 
+1. src/utils/constants.js
+2. src/utils/formatters.js
+3. src/utils/helpers.js 
+4. src/utils/validators.js
+
+
+   
+ADDONS  === mujhe jo map hai vo Home page pr show krwana hai waha pr sari jitne users photo upload krenge unki jo approv images hongi vo show hogi or jis jis jagh location
+            se upload hui hai us map me waha pin dikhe or uspr click krke koi bhi un images ko check kr skta hai 
+            

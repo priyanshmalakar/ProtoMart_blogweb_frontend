@@ -1,0 +1,115 @@
+npx create-react-app travel-photos-frontend
+cd travel-photos-frontend
+
+# Install dependencies
+npm install axios react-router-dom @tanstack/react-query
+npm install react-hook-form zustand
+npm install react-hot-toast
+npm install leaflet react-leaflet
+npm install tailwindcss postcss autoprefixer
+npm install lucide-react
+npm install date-fns
+```
+
+### 1.2 Folder Structure
+```
+travel-photos-frontend/
+├── public/
+│   ├── index.html
+│   └── favicon.ico
+├── src/
+│   ├── api/
+│   │   ├── axios.js              # Axios instance with interceptors
+│   │   ├── auth.api.js           # Auth API calls
+│   │   ├── photos.api.js         # Photos API calls
+│   │   ├── places.api.js         # Places API calls
+│   │   ├── blogs.api.js          # Blogs API calls
+│   │   ├── wallet.api.js         # Wallet API calls
+│   │   ├── admin.api.js          # Admin API calls
+│   │   └── googlePhotos.api.js   # Google Photos API calls
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── Loader.jsx
+│   │   │   ├── Button.jsx
+│   │   │   ├── Input.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   └── Card.jsx
+│   │   ├── auth/
+│   │   │   ├── LoginForm.jsx
+│   │   │   ├── RegisterForm.jsx
+│   │   │   └── ForgotPasswordForm.jsx
+│   │   ├── photos/
+│   │   │   ├── PhotoCard.jsx
+│   │   │   ├── PhotoGrid.jsx
+│   │   │   ├── PhotoUpload.jsx
+│   │   │   ├── PhotoDetail.jsx
+│   │   │   └── WatermarkedImage.jsx
+│   │   ├── googlePhotos/
+│   │   │   ├── GooglePhotosSync.jsx
+│   │   │   ├── AlbumLinkInput.jsx
+│   │   │   └── SyncStatus.jsx
+│   │   ├── places/
+│   │   │   ├── EarthViewer3D.jsx
+│   │   │   ├── PlaceCard.jsx
+│   │   │   ├── PlaceDetail.jsx
+│   │   │   └── PlaceMap.jsx
+│   │   ├── blogs/
+│   │   │   ├── BlogCard.jsx
+│   │   │   ├── BlogEditor.jsx
+│   │   │   ├── BlogList.jsx
+│   │   │   └── BlogDetail.jsx
+│   │   ├── wallet/
+│   │   │   ├── WalletBalance.jsx
+│   │   │   ├── TransactionHistory.jsx
+│   │   │   └── RedeemModal.jsx
+│   │   └── admin/
+│   │       ├── PendingPhotos.jsx
+│   │       ├── PhotoApproval.jsx
+│   │       ├── WatermarkSettings.jsx
+│   │       └── AdminStats.jsx
+│   ├── pages/
+│   │   ├── HomePage.jsx
+│   │   ├── LoginPage.jsx
+│   │   ├── RegisterPage.jsx
+│   │   ├── ExplorePage.jsx
+│   │   ├── PlaceDetailPage.jsx
+│   │   ├── PhotoDetailPage.jsx
+│   │   ├── MyPhotosPage.jsx
+│   │   ├── UploadPhotoPage.jsx
+│   │   ├── GooglePhotosSyncPage.jsx
+│   │   ├── BlogsPage.jsx
+│   │   ├── BlogDetailPage.jsx
+│   │   ├── WriteBlogPage.jsx
+│   │   ├── WalletPage.jsx
+│   │   ├── ProfilePage.jsx
+│   │   └── AdminDashboardPage.jsx
+│   ├── hooks/
+│   │   ├── useAuth.js
+│   │   ├── usePhotos.js
+│   │   ├── usePlaces.js
+│   │   ├── useBlogs.js
+│   │   ├── useWallet.js
+│   │   └── useAdmin.js
+│   ├── store/
+│   │   ├── authStore.js         # Zustand store for auth
+│   │   ├── photoStore.js        # Zustand store for photos
+│   │   └── uiStore.js           # Zustand store for UI state
+│   ├── utils/
+│   │   ├── constants.js
+│   │   ├── helpers.js
+│   │   ├── formatters.js
+│   │   └── validators.js
+│   ├── routes/
+│   │   ├── AppRoutes.jsx
+│   │   ├── ProtectedRoute.jsx
+│   │   └── AdminRoute.jsx
+│   ├── styles/
+│   │   └── globals.css
+│   ├── App.jsx
+│   └── index.js
+├── .env
+├── .env.example
+├── tailwind.config.js
+└── package.json
