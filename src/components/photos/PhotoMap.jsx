@@ -7,7 +7,7 @@ import { placesAPI } from "../../api/places.api";
 const createIcon = (count) =>
   L.divIcon({
     html: `<div style="
-      background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+      background:#3b82f6;
       width:40px;height:40px;border-radius:50%;
       display:flex;align-items:center;justify-content:center;
       color:#fff;font-weight:bold;
