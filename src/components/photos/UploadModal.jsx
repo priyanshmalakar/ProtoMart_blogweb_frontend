@@ -106,47 +106,44 @@ import { photosAPI } from '../../api/photos.api';
 import toast from 'react-hot-toast';
 
 const UploadModal = ({ coordinates, onClose }) => {
-  const [files, setFiles] = useState([]);
-  const [previews, setPreviews] = useState([]);
+const [selectedFiles, setSelectedFiles] = useState([]);
+const [previews, setPreviews] = useState([]);
   const [uploading, setUploading] = useState(false);
+ // Add safety check
+  if (!coordinates) {
+    return null;
+  }
+const handleFileSelect = (e) => {
+  const files = Array.from(e.target.files);
+  if (files.length > 0) {
+    setSelectedFiles(files);
+    setPreviews(files.map(file => URL.createObjectURL(file)));
+  }
+};
+ const handleUpload = async () => {
+  if (selectedFiles.length === 0) {
+    toast.error('Please select at least one photo');
+    return;
+  }
 
-  if (!coordinates) return null;
+  try {
+    setUploading(true);
+    const formData = new FormData();
+    selectedFiles.forEach(file => {
+      formData.append('photo', file);
+    });
+    formData.append('latitude', coordinates.latitude);
+    formData.append('longitude', coordinates.longitude);
 
-  const handleFileSelect = (e) => {
-    const selected = Array.from(e.target.files);
-    setFiles(selected);
-    setPreviews(
-      selected.map((file) => ({
-        url: URL.createObjectURL(file),
-        type: file.type,
-      }))
-    );
-  };
-
-  const handleUpload = async () => {
-    if (!files.length) {
-      toast.error('Select files first');
-      return;
-    }
-
-    try {
-      setUploading(true);
-      const formData = new FormData();
-
-      files.forEach((file) => formData.append('photo', file));
-      formData.append('latitude', coordinates.latitude);
-      formData.append('longitude', coordinates.longitude);
-
-      await photosAPI.uploadPhoto(formData);
-      toast.success('Files uploaded successfully');
-      onClose();
-    } catch (err) {
-      toast.error(err.message || 'Upload failed');
-    } finally {
-      setUploading(false);
-    }
-  };
-
+    await photosAPI.uploadPhoto(formData);
+    toast.success(`${selectedFiles.length} photo(s) uploaded successfully!`);
+    onClose();
+  } catch (error) {
+    toast.error('Upload failed: ' + error.message);
+  } finally {
+    setUploading(false);
+  }
+};
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
       <div className="bg-white rounded-lg p-6 max-w-md w-full">
@@ -157,22 +154,48 @@ const UploadModal = ({ coordinates, onClose }) => {
           </button>
         </div>
 
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Select Photo</label>
         <input
-          type="file"
-          multiple
-          accept="image/*,video/*"
-          onChange={handleFileSelect}
-          className="w-full border p-2 mb-4"
-        />
+  type="file"
+  accept="image/*"
+  multiple
+  onChange={handleFileSelect}
+  className="w-full border rounded p-2"
+/>
+        </div>
 
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          {previews.map((p, i) =>
-            p.type.startsWith('image') ? (
-              <img key={i} src={p.url} className="h-32 w-full object-cover rounded" />
-            ) : (
-              <video key={i} src={p.url} controls className="h-32 w-full rounded" />
-            )
-          )}
+        
+  {previews.length > 0 && (
+  <div className="mb-4">
+    <p className="text-sm text-gray-600 mb-2">{selectedFiles.length} photo(s) selected</p>
+    <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+      {previews.map((preview, index) => (
+        <img 
+          key={index} 
+          src={preview} 
+          alt={`Preview ${index + 1}`} 
+          className="w-full h-24 object-cover rounded" 
+        />
+      ))}
+    </div>
+  </div>
+)}
+        
+        <div className="flex space-x-3">
+          <button
+            onClick={handleUpload}
+            disabled={uploading}
+            className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            {uploading ? 'Uploading...' : 'Upload'}
+          </button>
+          <button
+            onClick={onClose}
+            className="flex-1 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300"
+          >
+            Cancel
+          </button>
         </div>
 
         <button
