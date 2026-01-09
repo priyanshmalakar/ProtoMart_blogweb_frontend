@@ -50,28 +50,42 @@ const BlogEditor = () => {
   };
 
   const onSubmit = async (data) => {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const blogData = {
-        ...data,
-        tags: data.tags ? data.tags.split(',').map(tag => tag.trim()).filter(Boolean) : []
-      };
+    const formData = new FormData();
+    formData.append('title', data.title);
+    formData.append('content', data.content);
+    formData.append('placeId', data.placeId);
+    formData.append(
+      'tags',
+      JSON.stringify(
+        data.tags
+          ? data.tags.split(',').map(t => t.trim())
+          : []
+      )
+    );
 
-      if (isEditMode) {
-        await blogsAPI.updateBlog(id, blogData);
-        toast.success('Blog updated successfully');
-      } else {
-        const response = await blogsAPI.createBlog(blogData);
-        toast.success('Blog created successfully');
-        navigate(`/blogs/${response.data._id}`);
-      }
-    } catch (error) {
-      toast.error(error.message || 'Failed to save blog');
-    } finally {
-      setLoading(false);
+    if (data.coverImages) {
+      Array.from(data.coverImages).forEach(file => {
+        formData.append('coverImages', file);
+      });
     }
-  };
+
+    if (isEditMode) {
+      await blogsAPI.updateBlog(id, formData);
+      toast.success('Blog updated');
+    } else {
+      await blogsAPI.createBlog(formData);
+      toast.success('Blog created');
+    }
+
+  } catch (err) {
+    toast.error('Failed to save blog');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handlePublish = async () => {
     if (!id) {
@@ -181,15 +195,19 @@ const BlogEditor = () => {
           </div>
 
           {/* Cover Image URL */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">Cover Image URL (Optional)</label>
-            <input
-              type="url"
-              {...register('coverImage')}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="https://example.com/image.jpg"
-            />
-          </div>
+         <div className="mb-6">
+  <label className="block text-sm font-medium mb-2">
+    Cover Images (Multiple)
+  </label>
+  <input
+    type="file"
+    multiple
+    accept="image/*"
+    onChange={(e) => setValue('coverImages', e.target.files)}
+    className="w-full"
+  />
+</div>
+
 
           {/* Tags */}
           <div className="mb-6">

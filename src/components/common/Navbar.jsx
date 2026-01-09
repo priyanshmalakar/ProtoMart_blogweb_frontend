@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
-import { Menu, X, User, Wallet, Upload, LogOut, Settings, Image } from 'lucide-react';
+import {
+  Menu,
+  X,
+  User,
+  Wallet,
+  Upload,
+  LogOut,
+  Settings,
+  Image
+} from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -15,6 +24,15 @@ const Navbar = () => {
     setUserMenuOpen(false);
   };
 
+  // ✅ Upload button handler
+  const handleUploadClick = () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    } else {
+      navigate('/upload');
+    }
+  };
+
   return (
     <nav className="bg-white shadow-md sticky top-0 z-[9999]">
       <div className="max-w-7xl mx-auto px-4">
@@ -22,28 +40,38 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <Image className="w-8 h-8 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900">Travel Photos</span>
+            <span className="text-xl font-bold text-gray-900">
+              Travel Photos
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/file-explorer" className="text-gray-700 hover:text-blue-600">
+            <Link
+              to="/file-explorer"
+              className="text-gray-700 hover:text-blue-600"
+            >
               File Explorer
             </Link>
-            <Link to="/blogs" className="text-gray-700 hover:text-blue-600">
+
+            <Link
+              to="/blogs"
+              className="text-gray-700 hover:text-blue-600"
+            >
               Blogs
             </Link>
 
+            {/* ✅ Upload (Login check) */}
+            <button
+              onClick={handleUploadClick}
+              className="flex items-center space-x-1 text-gray-700 hover:text-blue-600"
+            >
+              <Upload className="w-4 h-4" />
+              <span>Upload</span>
+            </button>
+
             {isAuthenticated ? (
               <>
-                <Link
-                  to="/upload"
-                  className="flex items-center space-x-1 text-gray-700 hover:text-blue-600"
-                >
-                  <Upload className="w-4 h-4" />
-                  <span>Upload</span>
-                </Link>
-
                 {/* User Menu */}
                 <div className="relative">
                   <button
@@ -64,46 +92,48 @@ const Navbar = () => {
                     <span>{user?.name}</span>
                   </button>
 
-                  {/* Dropdown Menu */}
+                  {/* Dropdown */}
                   {userMenuOpen && (
                     <>
-                      {/* Backdrop */}
                       <div
                         className="fixed inset-0 z-10"
                         onClick={() => setUserMenuOpen(false)}
                       />
-                      
+
                       <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20">
                         <Link
                           to="/profile"
-                          className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                           onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-100"
                         >
                           <User className="w-4 h-4" />
                           <span>Profile</span>
                         </Link>
+
                         <Link
                           to="/my-photos"
-                          className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                           onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-100"
                         >
                           <Image className="w-4 h-4" />
                           <span>My Photos</span>
                         </Link>
+
                         <Link
                           to="/wallet"
-                          className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                           onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-100"
                         >
                           <Wallet className="w-4 h-4" />
                           <span>Wallet</span>
                         </Link>
-                        
-                        {(user?.role === 'admin' || user?.role === 'superadmin') && (
+
+                        {(user?.role === 'admin' ||
+                          user?.role === 'superadmin') && (
                           <Link
                             to="/admin"
-                            className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100"
                             onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-100"
                           >
                             <Settings className="w-4 h-4" />
                             <span>Admin</span>
@@ -111,7 +141,7 @@ const Navbar = () => {
                         )}
 
                         <hr className="my-2" />
-                        
+
                         <button
                           onClick={handleLogout}
                           className="flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-gray-100 w-full"
@@ -126,10 +156,7 @@ const Navbar = () => {
               </>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link
-                  to="/login"
-                  className="text-gray-700 hover:text-blue-600"
-                >
+                <Link to="/login" className="text-gray-700 hover:text-blue-600">
                   Login
                 </Link>
                 <Link
@@ -142,16 +169,12 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-gray-700"
+            className="md:hidden"
           >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {mobileMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
 
@@ -159,58 +182,36 @@ const Navbar = () => {
         {mobileMenuOpen && (
           <div className="md:hidden pb-4">
             <div className="flex flex-col space-y-3">
-              <Link
-                to="/explore"
-                className="text-gray-700 hover:text-blue-600"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Explore
-              </Link>
-              <Link
-                to="/blogs"
-                className="text-gray-700 hover:text-blue-600"
-                onClick={() => setMobileMenuOpen(false)}
-              >
+              <Link to="/blogs" onClick={() => setMobileMenuOpen(false)}>
                 Blogs
               </Link>
 
+              {/* ✅ Upload (Login check) */}
+              <button
+                onClick={() => {
+                  handleUploadClick();
+                  setMobileMenuOpen(false);
+                }}
+                className="text-left text-gray-700 hover:text-blue-600"
+              >
+                Upload Photo
+              </button>
+
               {isAuthenticated ? (
                 <>
-                  <Link
-                    to="/upload"
-                    className="text-gray-700 hover:text-blue-600"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Upload Photo
-                  </Link>
-                  <Link
-                    to="/my-photos"
-                    className="text-gray-700 hover:text-blue-600"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    My Photos
-                  </Link>
-                  <Link
-                    to="/wallet"
-                    className="text-gray-700 hover:text-blue-600"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Wallet
-                  </Link>
-                  <Link
-                    to="/profile"
-                    className="text-gray-700 hover:text-blue-600"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
+                  <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>
                     Profile
                   </Link>
+                  <Link to="/my-photos" onClick={() => setMobileMenuOpen(false)}>
+                    My Photos
+                  </Link>
+                  <Link to="/wallet" onClick={() => setMobileMenuOpen(false)}>
+                    Wallet
+                  </Link>
 
-                  {(user?.role === 'admin' || user?.role === 'superadmin') && (
-                    <Link
-                      to="/admin"
-                      className="text-gray-700 hover:text-blue-600"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
+                  {(user?.role === 'admin' ||
+                    user?.role === 'superadmin') && (
+                    <Link to="/admin" onClick={() => setMobileMenuOpen(false)}>
                       Admin Dashboard
                     </Link>
                   )}
@@ -220,25 +221,17 @@ const Navbar = () => {
                       handleLogout();
                       setMobileMenuOpen(false);
                     }}
-                    className="text-red-600 hover:text-red-700 text-left"
+                    className="text-left text-red-600"
                   >
                     Logout
                   </button>
                 </>
               ) : (
                 <>
-                  <Link
-                    to="/login"
-                    className="text-gray-700 hover:text-blue-600"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
+                  <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                     Login
                   </Link>
-                  <Link
-                    to="/register"
-                    className="text-gray-700 hover:text-blue-600"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
+                  <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
                     Register
                   </Link>
                 </>
