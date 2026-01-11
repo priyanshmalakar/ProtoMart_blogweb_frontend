@@ -336,7 +336,7 @@ useEffect(() => {
     {
       icon: Wallet,
       title: 'Earn Rewards',
-      description: 'Get ₹1 for every approved photo'
+      description: 'Earn money for every approved photo'
     },
     {
       icon: MapPin,
@@ -501,7 +501,7 @@ useEffect(() => {
                 <div>
                   <h3 className="font-semibold mb-1">Earn Real Money</h3>
                   <p className="text-gray-600">
-                    Get ₹1 for every photo approved. Redeem anytime to ProtoMart.global
+                    Get many for every photo approved. Redeem anytime to ProtoMart.global
                   </p>
                 </div>
               </div>
