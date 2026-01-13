@@ -53,6 +53,21 @@ const Navbar = ({ className = "" }) => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if click is outside the user menu
+      if (userMenuOpen && !event.target.closest(".user-menu-container")) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [userMenuOpen]);
+
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-300 ${
@@ -120,7 +135,7 @@ const Navbar = ({ className = "" }) => {
             {isAuthenticated ? (
               <>
                 {/* User Menu */}
-                <div className="relative ml-2">
+                <div className="relative ml-2 user-menu-container">
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="flex items-center space-x-3 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all"
