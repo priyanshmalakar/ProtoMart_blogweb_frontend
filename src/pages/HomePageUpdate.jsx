@@ -243,9 +243,9 @@ const PhotoMap = ({ onLocationSelect, refreshKey }) => {
       <MapClickHandler onMapClick={onLocationSelect} />
       
       {/* Enhanced Map Controls */}
-      <div className="absolute top-6 right-6 space-y-3 z-[1000]">
-        <LocationButton />
-        <FullscreenButton />
+      <div className="absolute top-6 right-6 space-x-2 z-[1000] ">
+        <LocationButton className="shadow-2xl" />
+        <FullscreenButton className="shadow-2xl" />
       </div>
 
       {loading && (

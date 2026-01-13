@@ -63,7 +63,7 @@ const UploadModal = ({ coordinates, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold">Upload Photo</h3>
+          <h3 className="text-xl font-bold text-black">Upload Photo</h3>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X className="w-6 h-6" />
           </button>
@@ -71,14 +71,14 @@ const UploadModal = ({ coordinates, onClose }) => {
         
         <div className="mb-4">
           <p className="text-sm text-gray-600 mb-2">Location:</p>
-          <p className="font-mono text-sm bg-gray-50 p-2 rounded">
+          <p className="font-mono text-sm bg-gray-50 text-gray-800 p-2 rounded">
             Lat: {coordinates.latitude.toFixed(6)}<br/>
             Lng: {coordinates.longitude.toFixed(6)}
           </p>
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Select Photo</label>
+          <label className="block text-sm font-medium mb-2 text-gray-900">Select Photo</label>
           <input
             type="file"
             accept="image/*"
