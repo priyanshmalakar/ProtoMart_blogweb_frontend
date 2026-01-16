@@ -22,6 +22,10 @@ const ExplorePage = () => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [photosLoading, setPhotosLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchMode, setSearchMode] = useState(false);
 
   useEffect(() => {
     loadHierarchy();
@@ -58,15 +62,81 @@ const ExplorePage = () => {
     }
   };
 
+  const handleSearch = async (query) => {
+    if (!query || query.trim() === "") {
+      setSearchMode(false);
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      setIsSearching(true);
+      setSearchMode(true);
+      const res = await photosAPI.searchPhotos(query);
+      setSearchResults(res.data.data || res.data);
+    } catch (error) {
+      console.error("Search failed:", error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const debounceSearch = (func, delay = 500) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => func(...args), delay);
+    };
+  };
+
+  const debouncedSearch = debounceSearch(handleSearch);
+
   return (
     <div className="h-screen flex flex-col bg-gray-100">
       {/* Top Header */}
       <div className="bg-white border-b shadow-sm px-6 py-4">
-        <div className="flex items-center gap-3">
-          <FolderIcon className="text-blue-600" size={28} />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Photo Explorer</h1>
-            <p className="text-sm text-gray-500">Browse photos by location</p>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <FolderIcon className="text-blue-600" size={28} />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Photo Explorer
+              </h1>
+              <p className="text-sm text-gray-500">Browse photos by location</p>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  debouncedSearch(e.target.value);
+                }}
+                placeholder="Search by place, city, state, or country..."
+                className="w-full px-4 py-2 pl-10 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <ImageIcon
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSearchMode(false);
+                    setSearchResults([]);
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -108,24 +178,36 @@ const ExplorePage = () => {
         {/* Right Panel - Photo Grid */}
         <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
           {/* Breadcrumb / Header */}
-          {selectedPlace && (
+          {(selectedPlace || searchMode) && (
             <div className="bg-white border-b px-6 py-4 shadow-sm">
               <div className="flex items-center gap-2 text-sm text-gray-600">
-                <MapPinIcon size={18} className="text-blue-600" />
-                <span className="font-semibold text-gray-800">
-                  {selectedPlaceName}
-                </span>
-                <span className="text-gray-400">•</span>
-                <span>{photos.length} photos</span>
+                {searchMode ? (
+                  <>
+                    <ImageIcon size={18} className="text-blue-600" />
+                    <span className="font-semibold text-gray-800">
+                      Search Results for "{searchQuery}"
+                    </span>
+                    <span className="text-gray-400">•</span>
+                    <span>{searchResults.length} photos</span>
+                  </>
+                ) : (
+                  <>
+                    <MapPinIcon size={18} className="text-blue-600" />
+                    <span className="font-semibold text-gray-800">
+                      {selectedPlaceName}
+                    </span>
+                    <span className="text-gray-400">•</span>
+                    <span>{photos.length} photos</span>
+                  </>
+                )}
               </div>
             </div>
           )}
-
           <div className="flex-1 overflow-y-auto">
             <PhotoGrid
-              photos={photos}
-              loading={photosLoading}
-              selectedPlace={selectedPlace}
+              photos={searchMode ? searchResults : photos}
+              loading={searchMode ? isSearching : photosLoading}
+              selectedPlace={searchMode ? "search" : selectedPlace}
             />
           </div>
         </div>
@@ -290,9 +372,7 @@ const CityFolder = ({ city, loadPlacePhotos, selectedPlace }) => {
                 <MapPinIcon
                   size={14}
                   className={
-                    selectedPlace === place._id
-                      ? "text-white"
-                      : "text-blue-500"
+                    selectedPlace === place._id ? "text-white" : "text-blue-500"
                   }
                 />
                 <span className="flex-1 truncate">{place.name}</span>
@@ -353,7 +433,9 @@ const PhotoGrid = ({ photos, loading, selectedPlace }) => {
         <div className="text-center text-gray-400">
           <ImageIcon size={64} className="mx-auto mb-4 opacity-30" />
           <p className="text-lg font-medium">No photos found</p>
-          <p className="text-sm mt-1">This location doesn't have any photos yet</p>
+          <p className="text-sm mt-1">
+            This location doesn't have any photos yet
+          </p>
         </div>
       </div>
     );
