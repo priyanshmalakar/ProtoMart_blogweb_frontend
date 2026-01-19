@@ -10,6 +10,7 @@ import Footer from "../components/common/Footer";
 
 // Pages
 import HomePage from "../pages/HomePage";
+import HomePage2 from "../pages/HomePage2";
 import HomePageUpdate from "../pages/HomePageUpdate";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
@@ -34,7 +35,7 @@ const AppRoutes = () => {
       <main className="flex-1 pt-20">
         <Routes>
           {/* ==================== PUBLIC ROUTES ==================== */}
-          <Route path="/" element={<HomePageUpdate />} />
+          <Route path="/" element={<HomePage2 />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/file-explorer" element={<ExplorePage />} />

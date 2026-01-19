@@ -26,9 +26,11 @@ const ExplorePage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchMode, setSearchMode] = useState(false);
+  const [allPhotos, setAllPhotos] = useState([]);
 
   useEffect(() => {
     loadHierarchy();
+    loadAllPhotos();
   }, []);
 
   const loadHierarchy = async () => {
@@ -40,6 +42,34 @@ const ExplorePage = () => {
       console.error("Failed to load hierarchy:", error);
     } finally {
       setLoading(false);
+    }
+  };
+  const loadAllPhotos = async () => {
+    try {
+      setPhotosLoading(true);
+      const res = await photosAPI.getPlacesWithPhotos({
+        status: "approved",
+        limit: 1000,
+      });
+
+      // Flatten all photos from all places
+      const allPhotosFlattened = (res.data || []).flatMap((place) =>
+        (place.photos || []).map((photo) => ({
+          ...photo,
+          placeName: place.placeName,
+          city: place.city,
+          state: place.state,
+          country: place.country,
+        }))
+      );
+
+      setPhotos(allPhotosFlattened); // Set initial photos to show all
+      console.log("All Photos Loaded:", allPhotosFlattened);
+      setAllPhotos(allPhotosFlattened);
+    } catch (error) {
+      console.error("Failed to load all photos:", error);
+    } finally {
+      setPhotosLoading(false);
     }
   };
 
@@ -178,7 +208,7 @@ const ExplorePage = () => {
         {/* Right Panel - Photo Grid */}
         <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
           {/* Breadcrumb / Header */}
-          {(selectedPlace || searchMode) && (
+          {(selectedPlace || searchMode || photos.length > 0) && (
             <div className="bg-white border-b px-6 py-4 shadow-sm">
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 {searchMode ? (
@@ -190,11 +220,20 @@ const ExplorePage = () => {
                     <span className="text-gray-400">•</span>
                     <span>{searchResults.length} photos</span>
                   </>
-                ) : (
+                ) : selectedPlace ? (
                   <>
                     <MapPinIcon size={18} className="text-blue-600" />
                     <span className="font-semibold text-gray-800">
                       {selectedPlaceName}
+                    </span>
+                    <span className="text-gray-400">•</span>
+                    <span>{photos.length} photos</span>
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon size={18} className="text-blue-600" />
+                    <span className="font-semibold text-gray-800">
+                      All Photos
                     </span>
                     <span className="text-gray-400">•</span>
                     <span>{photos.length} photos</span>
@@ -413,19 +452,6 @@ const PhotoGrid = ({ photos, loading, selectedPlace }) => {
     );
   }
 
-  if (!selectedPlace) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-center text-gray-400">
-          <FolderIcon size={64} className="mx-auto mb-4 opacity-30" />
-          <p className="text-lg font-medium">No location selected</p>
-          <p className="text-sm mt-1">
-            Select a place from the sidebar to view photos
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   if (photos.length === 0) {
     return (
