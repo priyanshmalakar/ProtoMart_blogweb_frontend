@@ -24,9 +24,11 @@ import WalletPage from "../pages/WalletPage";
 import AdminDashboardPage from "../pages/AdminDashboardPage";
 import ProfilePage from "../pages/ProfilePage";
 import UploadPhotoPage from '../pages/UploadPhotoPage';
+import MapPage from '../pages/MapPage';
 import MyPhotosPage from '../pages/MyPhotosPage';
 import GoogleAuthSuccess from '../pages/GoogleAuthSuccess';
 import BlogDetailPage from "../components/blogs/BlogDetail";
+
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -35,7 +37,7 @@ const AppRoutes = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Show navbar on all pages except homepage */}
-      {!isHomePage && <Navbar2 />}
+      {!isHomePage && <NavbarUpdate />}
 
       <main className="flex-1" style={{ marginTop: isHomePage ? '0' : '10vh' }}>
         <Routes>
@@ -44,6 +46,7 @@ const AppRoutes = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/file-explorer" element={<ExplorePage />} />
+          <Route path="/map" element={<MapPage />} />
           <Route path="/places/:id" element={<PlaceDetailPage />} />
           <Route path="/photos/:id" element={<PhotoDetailPage />} />
           <Route path="/blogs" element={<BlogsPage />} />

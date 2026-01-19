@@ -18,6 +18,8 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
+   const isHomePage = location.pathname === '/';
+
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -42,7 +44,7 @@ const Navbar = () => {
   };
 
   return (
-      <nav className="bg-transparent absolute top-0 left-0 right-0 shadow-md z-[9999]">
+      <nav className=" absolute top-0 left-0 right-0 shadow-md z-[9999]" style={isHomePage ? {background: 'transparent'} : {background: '#00a6ff'}}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
@@ -56,25 +58,25 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4 text-sm font-bold">
-            <Link to="/explore" className="text-white hover:text-gray-200">
+          <div className="hidden md:flex items-center space-x-4 text-sm font-bold text-black hover:text-gray-800" >
+            <Link to="/file-explorer" >
               Explore Photos
             </Link>
-            <span className="text-white">|</span>
-            <Link to="/map" className="text-white hover:text-gray-200">
+            <span className="">|</span>
+            <Link to="/map">
               Explore by map
             </Link>
-            <span className="text-white">|</span>
+            <span className="">|</span>
             <button
               onClick={handleUploadClick}
-              className="text-white hover:text-gray-200"
+            
             >
               Upload Photos
             </button>
-            <span className="text-white">|</span>
+            <span className="">|</span>
             <button
               onClick={handleBlogsClick}
-              className="text-white hover:text-gray-200"
+             
             >
               Write blog
             </button>
@@ -83,9 +85,9 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="text-white hover:text-gray-200"
+                
                 >
-                  My Account!
+                  My Account
                 </button>
                 {userMenuOpen && (
                   <>
