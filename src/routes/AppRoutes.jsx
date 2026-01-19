@@ -1,11 +1,12 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "./AdminRoute";
 
 // Layout
 import Navbar from "../components/common/Navbar";
 import Navbar2 from "../components/common/Navbar2";
+import NavbarUpdate from "../components/common/NavbarUpdate";
 import Footer from "../components/common/Footer";
 
 // Pages
@@ -24,15 +25,19 @@ import AdminDashboardPage from "../pages/AdminDashboardPage";
 import ProfilePage from "../pages/ProfilePage";
 import UploadPhotoPage from '../pages/UploadPhotoPage';
 import MyPhotosPage from '../pages/MyPhotosPage';
-import GoogleAuthSuccess from '../pages/GoogleAuthSuccess'; // ✅ ADD THIS
+import GoogleAuthSuccess from '../pages/GoogleAuthSuccess';
 import BlogDetailPage from "../components/blogs/BlogDetail";
 
 const AppRoutes = () => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar2 className="mb-10" />
+      {/* Show navbar on all pages except homepage */}
+      {!isHomePage && <Navbar2 />}
 
-      <main className="flex-1 pt-20">
+      <main className="flex-1" style={{ marginTop: isHomePage ? '0' : '10vh' }}>
         <Routes>
           {/* ==================== PUBLIC ROUTES ==================== */}
           <Route path="/" element={<HomePage2 />} />

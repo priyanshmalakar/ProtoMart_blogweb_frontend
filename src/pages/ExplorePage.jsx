@@ -452,7 +452,6 @@ const PhotoGrid = ({ photos, loading, selectedPlace }) => {
     );
   }
 
-
   if (photos.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -555,7 +554,31 @@ const PhotoCard = ({ photo }) => {
       </div>
 
       {/* Bottom Info Bar (Always Visible) */}
-      <div className="p-2 bg-white border-t">
+      {/* Bottom Info Bar (Always Visible) */}
+      <div className="p-3 bg-white border-t">
+        {/* Location Name */}
+        {photo.placeName && (
+          <h3 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">
+            {photo.placeName}
+          </h3>
+        )}
+
+        {/* Location Details with Icon */}
+        {(photo.city || photo.state || photo.country) && (
+          <div className="flex items-start gap-1.5 mb-2">
+            <MapPinIcon
+              size={14}
+              className="mt-0.5 text-gray-500 flex-shrink-0"
+            />
+            <span className="text-xs text-gray-600 line-clamp-1">
+              {[photo.city, photo.state, photo.country]
+                .filter(Boolean)
+                .join(", ")}
+            </span>
+          </div>
+        )}
+
+        {/* Stats and User */}
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center gap-3">
             {photo.views > 0 && (
