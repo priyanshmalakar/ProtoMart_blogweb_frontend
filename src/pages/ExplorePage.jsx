@@ -72,25 +72,75 @@ const ExplorePage = () => {
       setPhotosLoading(false);
     }
   };
+ 
+
+   const loadPhotosByLocation = async (
+    level,
+    country,
+    state = null,
+    city = null
+  ) => {
+    try {
+      setPhotosLoading(true);
+      setSelectedPlace(null); // Clear place selection
+
+      // Filter photos based on level
+      let filteredPhotos = allPhotos;
+
+      if (level === "country") {
+        filteredPhotos = allPhotos.filter((photo) => photo.country === country);
+        setSelectedPlaceName(country);
+      } else if (level === "state") {
+        filteredPhotos = allPhotos.filter(
+          (photo) => photo.country === country && photo.state === state
+        );
+        setSelectedPlaceName(`${state}, ${country}`);
+      } else if (level === "city") {
+        filteredPhotos = allPhotos.filter(
+          (photo) =>
+            photo.country === country &&
+            photo.state === state &&
+            photo.city === city
+        );
+        setSelectedPlaceName(`${city}, ${state}, ${country}`);
+      }
+
+      setPhotos(filteredPhotos);
+    } catch (error) {
+      console.error("Failed to filter photos:", error);
+    } finally {
+      setPhotosLoading(false);
+    }
+  };
 
   const toggleExpand = (key) => {
     setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const loadPlacePhotos = async (placeId, placeName) => {
-    try {
-      setPhotosLoading(true);
-      setSelectedPlace(placeId);
-      setSelectedPlaceName(placeName);
-      const res = await placesAPI.getPlacePhotos(placeId, { limit: 100 });
-      setPhotos(res.data.data || res.data);
-    } catch (error) {
-      console.error("Failed to load photos:", error);
-      setPhotos([]);
-    } finally {
-      setPhotosLoading(false);
-    }
-  };
+  const loadPlacePhotos = async (placeId, placeName, city, state, country) => {
+  try {
+    setPhotosLoading(true);
+    setSelectedPlace(placeId);
+    setSelectedPlaceName(placeName);
+    const res = await placesAPI.getPlacePhotos(placeId, { limit: 100 });
+    
+    // Add location metadata if not present
+    const photosWithLocation = (res.data.data || res.data).map(photo => ({
+      ...photo,
+      placeName: placeName,
+      city: city,
+      state: state,
+      country: country
+    }));
+    
+    setPhotos(photosWithLocation);
+  } catch (error) {
+    console.error("Failed to load photos:", error);
+    setPhotos([]);
+  } finally {
+    setPhotosLoading(false);
+  }
+};
 
   const handleSearch = async (query) => {
     if (!query || query.trim() === "") {
@@ -198,6 +248,7 @@ const ExplorePage = () => {
                   expanded={expanded}
                   toggleExpand={toggleExpand}
                   loadPlacePhotos={loadPlacePhotos}
+                  loadPhotosByLocation={loadPhotosByLocation}
                   selectedPlace={selectedPlace}
                 />
               ))
@@ -255,11 +306,15 @@ const ExplorePage = () => {
   );
 };
 
+
+
+
 const CountryFolder = ({
   country,
   expanded,
   toggleExpand,
   loadPlacePhotos,
+  loadPhotosByLocation,
   selectedPlace,
 }) => {
   const countryKey = `country-${country._id}`;
@@ -268,7 +323,11 @@ const CountryFolder = ({
   return (
     <div className="mb-1">
       <div
-        onClick={() => toggleExpand(countryKey)}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleExpand(countryKey);
+          loadPhotosByLocation('country', country._id); 
+        }}
         className="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors group"
       >
         <div className="flex-shrink-0">
@@ -287,9 +346,9 @@ const CountryFolder = ({
         <span className="font-semibold text-gray-800 flex-1 truncate">
           {country._id}
         </span>
-        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+        {/* <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
           {country.countryTotalPhotos}
-        </span>
+        </span> */}
       </div>
 
       {isExpanded && (
@@ -303,6 +362,7 @@ const CountryFolder = ({
                 expanded={expanded}
                 toggleExpand={toggleExpand}
                 loadPlacePhotos={loadPlacePhotos}
+                 loadPhotosByLocation={loadPhotosByLocation}
                 selectedPlace={selectedPlace}
               />
             ))
@@ -323,6 +383,7 @@ const StateFolder = ({
   expanded,
   toggleExpand,
   loadPlacePhotos,
+  loadPhotosByLocation,
   selectedPlace,
 }) => {
   const stateKey = `state-${countryId}-${state.state}`;
@@ -331,9 +392,13 @@ const StateFolder = ({
   return (
     <div className="mb-1">
       <div
-        onClick={() => toggleExpand(stateKey)}
-        className="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
-      >
+  onClick={(e) => {
+    e.stopPropagation();
+    toggleExpand(stateKey);
+    loadPhotosByLocation('state', countryId, state.state);
+  }}
+  className="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
+>
         <div className="flex-shrink-0">
           {isExpanded ? (
             <ChevronDownIcon size={14} className="text-gray-500" />
@@ -345,9 +410,9 @@ const StateFolder = ({
         <span className="text-gray-700 font-medium flex-1 truncate text-sm">
           {state.state}
         </span>
-        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+        {/* <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
           {state.totalPhotos}
-        </span>
+        </span> */}
       </div>
 
       {isExpanded && (
@@ -355,11 +420,14 @@ const StateFolder = ({
           {state.cities && state.cities.length > 0 ? (
             state.cities.map((city, idx) => (
               <CityFolder
-                key={idx}
-                city={city}
-                loadPlacePhotos={loadPlacePhotos}
-                selectedPlace={selectedPlace}
-              />
+  key={idx}
+  city={city}
+  loadPhotosByLocation={loadPhotosByLocation}
+  loadPlacePhotos={loadPlacePhotos} 
+  selectedPlace={selectedPlace}
+  countryId={countryId}
+  stateId={state.state}
+/>
             ))
           ) : (
             <div className="px-3 py-2 text-xs text-gray-400">
@@ -372,15 +440,19 @@ const StateFolder = ({
   );
 };
 
-const CityFolder = ({ city, loadPlacePhotos, selectedPlace }) => {
+const CityFolder = ({ city, loadPhotosByLocation, selectedPlace, countryId, stateId, loadPlacePhotos }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div className="mb-1">
-      <div
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center gap-2 px-3 py-1.5 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
-      >
+     <div
+  onClick={(e) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+     loadPhotosByLocation('city', countryId, stateId, city.city);
+  }}
+  className="flex items-center gap-2 px-3 py-1.5 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
+>
         <div className="flex-shrink-0">
           {isExpanded ? (
             <ChevronDownIcon size={14} className="text-gray-400" />
@@ -392,7 +464,7 @@ const CityFolder = ({ city, loadPlacePhotos, selectedPlace }) => {
         <span className="text-gray-600 text-sm flex-1 truncate">
           {city.city}
         </span>
-        <span className="text-xs text-gray-400">{city.totalPhotos}</span>
+        {/* <span className="text-xs text-gray-400">{city.totalPhotos}</span> */}
       </div>
 
       {isExpanded && (
@@ -401,7 +473,7 @@ const CityFolder = ({ city, loadPlacePhotos, selectedPlace }) => {
             city.places.map((place) => (
               <div
                 key={place._id}
-                onClick={() => loadPlacePhotos(place._id, place.name)}
+                onClick={() => loadPlacePhotos(place._id, place.name, city.city, stateId, countryId)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all text-sm ${
                   selectedPlace === place._id
                     ? "bg-blue-500 text-white shadow-md"
@@ -415,7 +487,7 @@ const CityFolder = ({ city, loadPlacePhotos, selectedPlace }) => {
                   }
                 />
                 <span className="flex-1 truncate">{place.name}</span>
-                <span
+                {/* <span
                   className={`text-xs px-1.5 py-0.5 rounded ${
                     selectedPlace === place._id
                       ? "bg-blue-400 text-white"
@@ -423,7 +495,7 @@ const CityFolder = ({ city, loadPlacePhotos, selectedPlace }) => {
                   }`}
                 >
                   {place.photoCount}
-                </span>
+                </span> */}
               </div>
             ))
           ) : (
