@@ -30,21 +30,23 @@ const RegisterPage = () => {
   const password = watch("password");
 
   const onSubmit = async (data) => {
-    try {
-      setLoading(true);
-      const response = await authAPI.register(data);
+  try {
+    setLoading(true);
 
-      login(response.data.user, response.data.token);
-      toast.success("Registration successful! Please verify your email.");
+    await authAPI.register(data);
 
-      // ✅ Redirect to login page after registration
-      navigate("/login");
-    } catch (error) {
-      toast.error(error.message || "Registration failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.success("Registration successful! Please verify your email.");
+
+    navigate("/login");
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message || "Registration failed"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleGoogleLogin = () => {
     window.location.href = "http://localhost:5000/api/auth/google";
