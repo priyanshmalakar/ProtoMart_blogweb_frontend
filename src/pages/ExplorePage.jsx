@@ -72,9 +72,8 @@ const ExplorePage = () => {
       setPhotosLoading(false);
     }
   };
- 
 
-   const loadPhotosByLocation = async (
+  const loadPhotosByLocation = async (
     level,
     country,
     state = null,
@@ -118,29 +117,29 @@ const ExplorePage = () => {
   };
 
   const loadPlacePhotos = async (placeId, placeName, city, state, country) => {
-  try {
-    setPhotosLoading(true);
-    setSelectedPlace(placeId);
-    setSelectedPlaceName(placeName);
-    const res = await placesAPI.getPlacePhotos(placeId, { limit: 100 });
-    
-    // Add location metadata if not present
-    const photosWithLocation = (res.data.data || res.data).map(photo => ({
-      ...photo,
-      placeName: placeName,
-      city: city,
-      state: state,
-      country: country
-    }));
-    
-    setPhotos(photosWithLocation);
-  } catch (error) {
-    console.error("Failed to load photos:", error);
-    setPhotos([]);
-  } finally {
-    setPhotosLoading(false);
-  }
-};
+    try {
+      setPhotosLoading(true);
+      setSelectedPlace(placeId);
+      setSelectedPlaceName(placeName);
+      const res = await placesAPI.getPlacePhotos(placeId, { limit: 100 });
+
+      // Add location metadata if not present
+      const photosWithLocation = (res.data.data || res.data).map((photo) => ({
+        ...photo,
+        placeName: placeName,
+        city: city,
+        state: state,
+        country: country,
+      }));
+
+      setPhotos(photosWithLocation);
+    } catch (error) {
+      console.error("Failed to load photos:", error);
+      setPhotos([]);
+    } finally {
+      setPhotosLoading(false);
+    }
+  };
 
   const handleSearch = async (query) => {
     if (!query || query.trim() === "") {
@@ -306,9 +305,6 @@ const ExplorePage = () => {
   );
 };
 
-
-
-
 const CountryFolder = ({
   country,
   expanded,
@@ -326,7 +322,7 @@ const CountryFolder = ({
         onClick={(e) => {
           e.stopPropagation();
           toggleExpand(countryKey);
-          loadPhotosByLocation('country', country._id); 
+          loadPhotosByLocation("country", country._id);
         }}
         className="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors group"
       >
@@ -362,7 +358,7 @@ const CountryFolder = ({
                 expanded={expanded}
                 toggleExpand={toggleExpand}
                 loadPlacePhotos={loadPlacePhotos}
-                 loadPhotosByLocation={loadPhotosByLocation}
+                loadPhotosByLocation={loadPhotosByLocation}
                 selectedPlace={selectedPlace}
               />
             ))
@@ -392,13 +388,13 @@ const StateFolder = ({
   return (
     <div className="mb-1">
       <div
-  onClick={(e) => {
-    e.stopPropagation();
-    toggleExpand(stateKey);
-    loadPhotosByLocation('state', countryId, state.state);
-  }}
-  className="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
->
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleExpand(stateKey);
+          loadPhotosByLocation("state", countryId, state.state);
+        }}
+        className="flex items-center gap-2 px-3 py-2 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
+      >
         <div className="flex-shrink-0">
           {isExpanded ? (
             <ChevronDownIcon size={14} className="text-gray-500" />
@@ -420,14 +416,14 @@ const StateFolder = ({
           {state.cities && state.cities.length > 0 ? (
             state.cities.map((city, idx) => (
               <CityFolder
-  key={idx}
-  city={city}
-  loadPhotosByLocation={loadPhotosByLocation}
-  loadPlacePhotos={loadPlacePhotos} 
-  selectedPlace={selectedPlace}
-  countryId={countryId}
-  stateId={state.state}
-/>
+                key={idx}
+                city={city}
+                loadPhotosByLocation={loadPhotosByLocation}
+                loadPlacePhotos={loadPlacePhotos}
+                selectedPlace={selectedPlace}
+                countryId={countryId}
+                stateId={state.state}
+              />
             ))
           ) : (
             <div className="px-3 py-2 text-xs text-gray-400">
@@ -440,19 +436,26 @@ const StateFolder = ({
   );
 };
 
-const CityFolder = ({ city, loadPhotosByLocation, selectedPlace, countryId, stateId, loadPlacePhotos }) => {
+const CityFolder = ({
+  city,
+  loadPhotosByLocation,
+  selectedPlace,
+  countryId,
+  stateId,
+  loadPlacePhotos,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div className="mb-1">
-     <div
-  onClick={(e) => {
-    e.stopPropagation();
-    setIsExpanded(!isExpanded);
-     loadPhotosByLocation('city', countryId, stateId, city.city);
-  }}
-  className="flex items-center gap-2 px-3 py-1.5 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
->
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsExpanded(!isExpanded);
+          loadPhotosByLocation("city", countryId, stateId, city.city);
+        }}
+        className="flex items-center gap-2 px-3 py-1.5 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
+      >
         <div className="flex-shrink-0">
           {isExpanded ? (
             <ChevronDownIcon size={14} className="text-gray-400" />
@@ -473,7 +476,15 @@ const CityFolder = ({ city, loadPhotosByLocation, selectedPlace, countryId, stat
             city.places.map((place) => (
               <div
                 key={place._id}
-                onClick={() => loadPlacePhotos(place._id, place.name, city.city, stateId, countryId)}
+                onClick={() =>
+                  loadPlacePhotos(
+                    place._id,
+                    place.name,
+                    city.city,
+                    stateId,
+                    countryId
+                  )
+                }
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all text-sm ${
                   selectedPlace === place._id
                     ? "bg-blue-500 text-white shadow-md"
@@ -570,16 +581,16 @@ const PhotoCard = ({ photo }) => {
 
   return (
     <div
-      className="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
+      className="group relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer bg-white"
       onMouseEnter={() => setShowDetails(true)}
       onMouseLeave={() => setShowDetails(false)}
     >
       {/* Image */}
-      <div className="aspect-square relative overflow-hidden bg-gray-100">
+      <div className="aspect-video relative overflow-hidden bg-gray-100">
         <img
           src={imageUrl}
           alt={photo.fileName}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 shadow-md"
           loading="lazy"
         />
 
@@ -626,8 +637,8 @@ const PhotoCard = ({ photo }) => {
       </div>
 
       {/* Bottom Info Bar (Always Visible) */}
-      {/* Bottom Info Bar (Always Visible) */}
-      <div className="p-3 bg-white border-t">
+
+      <div className="p-3 ">
         {/* Location Name */}
         {photo.placeName && (
           <h3 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">
@@ -652,7 +663,7 @@ const PhotoCard = ({ photo }) => {
 
         {/* Stats and User */}
         <div className="flex items-center justify-between text-xs text-gray-500">
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             {photo.views > 0 && (
               <div className="flex items-center gap-1">
                 <EyeIcon size={12} />
@@ -665,12 +676,12 @@ const PhotoCard = ({ photo }) => {
                 <span>{photo.likes}</span>
               </div>
             )}
-          </div>
-          {photo.userId?.name && (
+          </div> */}
+          {/* {photo.userId?.name && (
             <span className="text-xs text-gray-400 truncate max-w-[100px]">
               {photo.userId.name}
             </span>
-          )}
+          )} */}
         </div>
       </div>
     </div>
