@@ -8,6 +8,12 @@ export const photosAPI = {
     });
   },
 
+  searchPhotos: async (query) => {
+    return axiosInstance.get('/photos/search', {
+      params: { q: query }
+    });
+  },
+
   // Get all photos (approved by default)
   getPhotos: async (params) => {
     return axiosInstance.get('/photos', { params });
