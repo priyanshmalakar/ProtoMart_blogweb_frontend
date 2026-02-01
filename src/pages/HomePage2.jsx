@@ -382,13 +382,13 @@ const HomePage = () => {
           backgroundImage: `url(${image1})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          minHeight: "450px",
+          minHeight: "350px",
         }}
       >
         {/* Semi-transparent overlay */}
         <div className="absolute inset-0 bg-white bg-opacity-30"></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 pt-20 pb-8">
+        <div className="relative max-w-7xl mx-auto px-4 pt-20 ">
           {/* Main Heading */}
           <div className="text-center mb-6">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">
@@ -451,13 +451,13 @@ const HomePage = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="max-w-3xl mx-auto">
+          {/* <div className="max-w-3xl mx-auto">
             <input
               type="text"
               placeholder="Search photo by place, type, date, etc.."
               className="w-full px-6 py-3 rounded-lg text-gray-800 text-base border-2 border-gray-400 bg-white"
             />
-          </div>
+          </div> */}
         </div>
       </div>
       {/* File Explorer and Photo Grid Section */}
@@ -492,9 +492,9 @@ const HomePage = () => {
             backgroundPosition: "center",
           }}
         >
-          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-          <div className="relative z-10 flex items-center justify-center h-full">
-            <div className="text-center text-white px-4">
+          <div className="absolute inset-0 "></div>
+          <div className="relative z-10  justify-center h-full px-10 py-4">
+            <div className="text-center text-white p-6 bg-black bg-opacity-65 rounded-md">
               <h2
                 className="text-4xl md:text-5xl font-bold mb-6"
                 style={{ fontFamily: "Brush Script MT, cursive" }}
@@ -513,7 +513,7 @@ const HomePage = () => {
         </div>
 
         {/* Second Forest Image Section */}
-        <div
+        {/* <div
           className="relative h-[100vh] bg-cover bg-center"
           style={{
             backgroundImage: `url(${image3})`,
@@ -522,7 +522,7 @@ const HomePage = () => {
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-        </div>
+        </div> */}
       </div>
 
       {/* CTA Section */}
