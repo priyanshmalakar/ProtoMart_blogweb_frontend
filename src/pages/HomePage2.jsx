@@ -70,14 +70,16 @@ const LocationButton = () => {
   return (
     <button
       onClick={goToMyLocation}
-      className="absolute top-4 right-4 bg-white p-3 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition"
+      className="absolute top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition flex items-center gap-2"
       title="Go to my location"
     >
       <MapPin className="w-5 h-5 text-blue-600" />
+      <span className="text-sm font-medium text-gray-700">
+        Live Location
+      </span>
     </button>
   );
 };
-
 const FullscreenButton = () => {
   const map = useMap();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -112,37 +114,43 @@ const FullscreenButton = () => {
   return (
     <button
       onClick={toggleFullscreen}
-      className="absolute top-16 right-4 bg-white p-3 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition"
+      className="absolute top-16 right-4 bg-white px-4 py-2 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition flex items-center gap-2"
       title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
     >
       {isFullscreen ? (
-        <svg
-          className="w-5 h-5 text-blue-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
+        <>
+          <svg
+            className="w-5 h-5 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          <span className="text-sm font-medium text-gray-700">Exit Fullscreen</span>
+        </>
       ) : (
-        <svg
-          className="w-5 h-5 text-blue-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-          />
-        </svg>
+        <>
+          <svg
+            className="w-5 h-5 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+            />
+          </svg>
+          <span className="text-sm font-medium text-gray-700">Fullscreen</span>
+        </>
       )}
     </button>
   );
@@ -223,8 +231,10 @@ const PhotoMap = ({ onLocationSelect, refreshKey, photos, loading }) => {
       style={{ minHeight: "500px" }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="&copy; OpenStreetMap &copy; CARTO"
+        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        subdomains="abcd"
+        maxZoom={20}
       />
 
       <MapClickHandler onMapClick={onLocationSelect} />
