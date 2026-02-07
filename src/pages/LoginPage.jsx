@@ -50,7 +50,7 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href = "https://protomart-blogweb-backend-6xor.onrender.com/api/auth/google";
   };
 
   return (
