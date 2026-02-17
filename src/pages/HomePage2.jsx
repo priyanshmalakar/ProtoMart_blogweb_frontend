@@ -70,14 +70,16 @@ const LocationButton = () => {
   return (
     <button
       onClick={goToMyLocation}
-      className="absolute top-4 right-4 bg-white p-3 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition"
+      className="absolute top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition flex items-center gap-2"
       title="Go to my location"
     >
       <MapPin className="w-5 h-5 text-blue-600" />
+      <span className="text-sm font-medium text-gray-700">
+        Live Location
+      </span>
     </button>
   );
 };
-
 const FullscreenButton = () => {
   const map = useMap();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -112,37 +114,43 @@ const FullscreenButton = () => {
   return (
     <button
       onClick={toggleFullscreen}
-      className="absolute top-16 right-4 bg-white p-3 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition"
+      className="absolute top-16 right-4 bg-white px-4 py-2 rounded-lg shadow-lg z-[1000] hover:bg-gray-50 transition flex items-center gap-2"
       title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
     >
       {isFullscreen ? (
-        <svg
-          className="w-5 h-5 text-blue-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
+        <>
+          <svg
+            className="w-5 h-5 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          <span className="text-sm font-medium text-gray-700">Exit Fullscreen</span>
+        </>
       ) : (
-        <svg
-          className="w-5 h-5 text-blue-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-          />
-        </svg>
+        <>
+          <svg
+            className="w-5 h-5 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+            />
+          </svg>
+          <span className="text-sm font-medium text-gray-700">Fullscreen</span>
+        </>
       )}
     </button>
   );
@@ -223,8 +231,10 @@ const PhotoMap = ({ onLocationSelect, refreshKey, photos, loading }) => {
       style={{ minHeight: "500px" }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="&copy; OpenStreetMap &copy; CARTO"
+        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        subdomains="abcd"
+        maxZoom={20}
       />
 
       <MapClickHandler onMapClick={onLocationSelect} />
@@ -382,13 +392,13 @@ const HomePage = () => {
           backgroundImage: `url(${image1})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          minHeight: "450px",
+          minHeight: "350px",
         }}
       >
         {/* Semi-transparent overlay */}
         <div className="absolute inset-0 bg-white bg-opacity-30"></div>
 
-        <div className="relative max-w-7xl mx-auto px-4 pt-20 pb-8">
+        <div className="relative max-w-7xl mx-auto px-4 pt-20 ">
           {/* Main Heading */}
           <div className="text-center mb-6">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">
@@ -451,13 +461,13 @@ const HomePage = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="max-w-3xl mx-auto">
+          {/* <div className="max-w-3xl mx-auto">
             <input
               type="text"
               placeholder="Search photo by place, type, date, etc.."
               className="w-full px-6 py-3 rounded-lg text-gray-800 text-base border-2 border-gray-400 bg-white"
             />
-          </div>
+          </div> */}
         </div>
       </div>
       {/* File Explorer and Photo Grid Section */}
@@ -492,9 +502,9 @@ const HomePage = () => {
             backgroundPosition: "center",
           }}
         >
-          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-          <div className="relative z-10 flex items-center justify-center h-full">
-            <div className="text-center text-white px-4">
+          <div className="absolute inset-0 "></div>
+          <div className="relative z-10  justify-center h-full px-10 py-4">
+            <div className="text-center text-white p-6 bg-black bg-opacity-65 rounded-md">
               <h2
                 className="text-4xl md:text-5xl font-bold mb-6"
                 style={{ fontFamily: "Brush Script MT, cursive" }}
@@ -513,7 +523,7 @@ const HomePage = () => {
         </div>
 
         {/* Second Forest Image Section */}
-        <div
+        {/* <div
           className="relative h-[100vh] bg-cover bg-center"
           style={{
             backgroundImage: `url(${image3})`,
@@ -522,7 +532,7 @@ const HomePage = () => {
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-        </div>
+        </div> */}
       </div>
 
       {/* CTA Section */}

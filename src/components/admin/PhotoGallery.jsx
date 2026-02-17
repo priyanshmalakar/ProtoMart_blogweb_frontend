@@ -24,9 +24,41 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
     const navbar = document.querySelector("nav");
     if (navbar) navbar.style.display = "none";
 
+    // Request fullscreen
+    const enterFullscreen = async () => {
+      try {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          await document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+          await document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+          await document.documentElement.msRequestFullscreen();
+        }
+      } catch (err) {
+        console.error("Error entering fullscreen:", err);
+      }
+    };
+
+    enterFullscreen();
+
     return () => {
       document.body.style.overflow = "auto";
       if (navbar) navbar.style.display = "block";
+
+      // Exit fullscreen
+      if (document.fullscreenElement) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
     };
   }, []);
   useEffect(() => {

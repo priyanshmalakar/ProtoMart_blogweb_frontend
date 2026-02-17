@@ -86,7 +86,7 @@ const LocationButton = () => {
       className="group bg-white/90 backdrop-blur-md p-3 rounded-xl shadow-lg hover:bg-white transition-all hover:scale-110 border border-gray-200"
       title="Go to my location"
     >
-      <MapPin className="w-5 h-5 text-blue-600 group-hover:animate-pulse" />
+      <MapPin className="w-5 h-5 text-blue-600 group-hover:animate-pulse" /> My Location
     </button>
   );
 };
@@ -235,10 +235,12 @@ const PhotoMap = ({ onLocationSelect, refreshKey }) => {
       className="w-full h-full"
       style={{ minHeight: '600px' }}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+  <TileLayer
+  attribution='&copy; OpenStreetMap &copy; CARTO'
+  url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+  subdomains="abcd"
+  maxZoom={20}
+/>
 
       <MapClickHandler onMapClick={onLocationSelect} />
       

@@ -35,7 +35,7 @@ const PhotoMap = ({ preview = false }) => {
       dragging
       doubleClickZoom
     >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
 
       {places.map((p) => (
         <Marker

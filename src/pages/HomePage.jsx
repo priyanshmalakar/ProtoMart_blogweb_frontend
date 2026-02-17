@@ -202,9 +202,11 @@ const fetchApprovedPhotos = async () => {
       style={{ minHeight: '600px' }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+  attribution='&copy; OpenStreetMap &copy; CARTO'
+  url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+  subdomains="abcd"
+  maxZoom={20}
+/>
 
       <MapClickHandler onMapClick={onLocationSelect} />
       <LocationButton />

@@ -561,7 +561,7 @@ const PhotoGrid = ({ photos, loading, selectedPlace }) => {
 };
 
 const PhotoCard = ({ photo }) => {
-  const [showDetails, setShowDetails] = useState(false);
+  // const [showDetails, setShowDetails] = useState(false);
 
   const imageUrl =
     photo.originalUrl || photo.thumbnailUrl || photo.watermarkedUrl;
@@ -580,60 +580,18 @@ const PhotoCard = ({ photo }) => {
   };
 
   return (
-    <div
-      className="group relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer bg-white"
-      onMouseEnter={() => setShowDetails(true)}
-      onMouseLeave={() => setShowDetails(false)}
-    >
+    <div className="group relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-white">
       {/* Image */}
-      <div className="aspect-video relative overflow-hidden bg-gray-100">
+      <div
+        className="aspect-video relative overflow-hidden bg-gray-100 cursor-pointer"
+        onClick={openInNewTab}
+      >
         <img
           src={imageUrl}
           alt={photo.fileName}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 shadow-md"
           loading="lazy"
         />
-
-        {/* Overlay on Hover */}
-        {showDetails && (
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-3 text-white">
-            {/* Location Info */}
-            {/* <div className="space-y-1.5 mb-2">
-              {photo.placeName && (
-                <div className="flex items-start gap-1.5">
-                  <MapPinIcon size={14} className="mt-0.5 flex-shrink-0" />
-                  <span className="text-xs font-medium line-clamp-2">
-                    {photo.placeName}
-                  </span>
-                </div>
-              )}
-
-              {(photo.city || photo.state || photo.country) && (
-                <div className="text-xs text-gray-300">
-                  {[photo.city, photo.state, photo.country]
-                    .filter(Boolean)
-                    .join(", ")}
-                </div>
-              )}
-
-              {photo.createdAt && (
-                <div className="flex items-center gap-1.5 text-xs text-gray-300">
-                  <CalendarIcon size={12} />
-                  <span>{formatDate(photo.createdAt)}</span>
-                </div>
-              )}
-            </div> */}
-
-            {/* Action Button */}
-            <button
-              onClick={openInNewTab}
-              className="flex items-center justify-center gap-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors"
-            >
-              <ExternalLinkIcon size={14} />
-              Open Full Image
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Bottom Info Bar (Always Visible) */}
