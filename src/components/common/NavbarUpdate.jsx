@@ -44,7 +44,7 @@ const Navbar = () => {
   };
 
   return (
-      <nav className=" absolute top-0 left-0 right-0 shadow-md z-[9999]" style={isHomePage ? {background: 'transparent'} : {background: '#00a6ff'}}>
+    <nav className="absolute top-0 left-0 right-0 shadow-md z-[9999]" style={isHomePage && !mobileMenuOpen ? {background: 'transparent'} : {background: '#00a6ff'}}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
@@ -160,9 +160,10 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden pb-4">
-            <div className="flex flex-col space-y-3 text-white">
+     {mobileMenuOpen && (
+  <div className="md:hidden pb-4 bg-[#00a6ff] rounded-b-lg">
+    <div className="flex flex-col space-y-3 text-white px-2">
+    
               <Link to="/explore" onClick={() => setMobileMenuOpen(false)}>
                 Explore Photos
               </Link>

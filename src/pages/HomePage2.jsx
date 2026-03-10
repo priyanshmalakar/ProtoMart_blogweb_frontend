@@ -426,7 +426,7 @@ const HomePage = () => {
           <div className="text-center mb-6">
             <div className="inline-flex flex-wrap items-center justify-center gap-2 text-base font-bold">
               <button
-                onClick={() => navigate("/explore")}
+                onClick={() => navigate("/file-explorer")}
                 className="hover:underline"
               >
                 Explore Photos

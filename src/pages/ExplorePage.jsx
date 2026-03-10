@@ -175,7 +175,7 @@ const ExplorePage = () => {
     <div className="h-screen flex flex-col bg-gray-100">
       {/* Top Header */}
       <div className="bg-white border-b shadow-sm px-6 py-4">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <FolderIcon className="text-blue-600" size={28} />
             <div>
@@ -187,7 +187,7 @@ const ExplorePage = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-md">
+          <div className="w-full sm:flex-1 sm:max-w-md">
             <div className="relative">
               <input
                 type="text"
@@ -219,10 +219,9 @@ const ExplorePage = () => {
           </div>
         </div>
       </div>
-
-      <div className="flex flex-1 overflow-hidden">
+<div className="flex flex-1 overflow-hidden flex-col md:flex-row">
         {/* Left Sidebar - Folder Tree */}
-        <div className="w-80 bg-white border-r shadow-sm flex flex-col">
+        <div className="w-full md:w-80 bg-white border-r shadow-sm flex flex-col max-h-60 md:max-h-full">
           <div className="p-4 border-b bg-gray-50">
             <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
               Locations
@@ -550,8 +549,8 @@ const PhotoGrid = ({ photos, loading, selectedPlace }) => {
   }
 
   return (
-    <div className="p-6">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+  <div className="p-3 sm:p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {photos.map((photo) => (
           <PhotoCard key={photo._id} photo={photo} />
         ))}
