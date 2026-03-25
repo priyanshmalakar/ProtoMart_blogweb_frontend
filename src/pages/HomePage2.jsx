@@ -455,9 +455,9 @@ const HomePage = () => {
             </div>
 
             {/* Second line with File explorer text */}
-            <div className="inline-flex items-center justify-center gap-2 text-base font-bold mt-2">
+            {/* <div className="inline-flex items-center justify-center gap-2 text-base font-bold mt-2">
               <span>in File explorer</span>
-            </div>
+            </div> */}
           </div>
 
           {/* Search Bar */}

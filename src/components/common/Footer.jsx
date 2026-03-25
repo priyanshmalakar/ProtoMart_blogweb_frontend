@@ -1,8 +1,11 @@
 import { Camera, Mail, MapPin } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const Footer = () => {
+  const navigate = useNavigate()
+
   return (
-    <footer className="bg-gray-900 text-white ">
+    <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About */}
@@ -20,9 +23,38 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="/photos" className="hover:text-white transition">Photos</a></li>
-              <li><a href="/places" className="hover:text-white transition">Places</a></li>
-              <li><a href="/blogs" className="hover:text-white transition">Blogs</a></li>
+              <li>
+                <button
+                  onClick={() => navigate('/file-explorer')}
+                  className="hover:text-white transition"
+                >
+                  Explore Photos
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/map')}
+                  className="hover:text-white transition"
+                >
+                  Explore Photos by Map
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/upload')}
+                  className="hover:text-white transition"
+                >
+                  Upload Photos
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/blogs')}
+                  className="hover:text-white transition"
+                >
+                  Write Blog
+                </button>
+              </li>
             </ul>
           </div>
 

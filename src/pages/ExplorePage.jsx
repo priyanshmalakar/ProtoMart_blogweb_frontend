@@ -13,6 +13,7 @@ import {
   ExternalLinkIcon,
   LoaderIcon,
 } from "lucide-react";
+import { PhotoGallery, PhotoLightbox } from "../components/admin/PhotoGallery";
 
 const ExplorePage = () => {
   const [hierarchy, setHierarchy] = useState([]);
@@ -219,7 +220,7 @@ const ExplorePage = () => {
           </div>
         </div>
       </div>
-<div className="flex flex-1 overflow-hidden flex-col md:flex-row">
+      <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
         {/* Left Sidebar - Folder Tree */}
         <div className="w-full md:w-80 bg-white border-r shadow-sm flex flex-col max-h-60 md:max-h-full">
           <div className="p-4 border-b bg-gray-50">
@@ -520,6 +521,8 @@ const CityFolder = ({
 };
 
 const PhotoGrid = ({ photos, loading, selectedPlace }) => {
+  const [lightboxIndex, setLightboxIndex] = useState(null);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -549,22 +552,39 @@ const PhotoGrid = ({ photos, loading, selectedPlace }) => {
   }
 
   return (
-  <div className="p-3 sm:p-6">
+    <div className="p-3 sm:p-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {photos.map((photo) => (
-          <PhotoCard key={photo._id} photo={photo} />
+        {photos.map((photo, index) => (
+          <PhotoCard
+            key={photo._id}
+            photo={photo}
+            onClick={() => setLightboxIndex(index)} // ← pass index
+          />
         ))}
       </div>
+
+      {lightboxIndex !== null && (
+        <PhotoLightbox
+          photos={photos.map((photo) => ({
+            ...photo,
+            place: {
+              name: photo.placeName,
+              city: photo.city,
+              state: photo.state,
+              country: photo.country,
+            },
+          }))}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
     </div>
   );
 };
 
-const PhotoCard = ({ photo }) => {
-  // const [showDetails, setShowDetails] = useState(false);
-
+const PhotoCard = ({ photo, onClick }) => {
   const imageUrl =
     photo.originalUrl || photo.thumbnailUrl || photo.watermarkedUrl;
-  const fullImageUrl = photo.originalUrl || photo.watermarkedUrl;
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -574,16 +594,12 @@ const PhotoCard = ({ photo }) => {
     });
   };
 
-  const openInNewTab = () => {
-    window.open(fullImageUrl, "_blank");
-  };
-
   return (
     <div className="group relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-white">
-      {/* Image */}
+      {/* Image — onClick now opens lightbox instead of new tab */}
       <div
         className="aspect-video relative overflow-hidden bg-gray-100 cursor-pointer"
-        onClick={openInNewTab}
+        onClick={onClick} // ← was: onClick={openInNewTab}
       >
         <img
           src={imageUrl}
@@ -593,17 +609,12 @@ const PhotoCard = ({ photo }) => {
         />
       </div>
 
-      {/* Bottom Info Bar (Always Visible) */}
-
-      <div className="p-3 ">
-        {/* Location Name */}
+      <div className="p-3">
         {photo.placeName && (
           <h3 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">
             {photo.placeName}
           </h3>
         )}
-
-        {/* Location Details with Icon */}
         {(photo.city || photo.state || photo.country) && (
           <div className="flex items-start gap-1.5 mb-2">
             <MapPinIcon
@@ -617,29 +628,6 @@ const PhotoCard = ({ photo }) => {
             </span>
           </div>
         )}
-
-        {/* Stats and User */}
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          {/* <div className="flex items-center gap-3">
-            {photo.views > 0 && (
-              <div className="flex items-center gap-1">
-                <EyeIcon size={12} />
-                <span>{photo.views}</span>
-              </div>
-            )}
-            {photo.likes > 0 && (
-              <div className="flex items-center gap-1">
-                <HeartIcon size={12} className="text-red-500" />
-                <span>{photo.likes}</span>
-              </div>
-            )}
-          </div> */}
-          {/* {photo.userId?.name && (
-            <span className="text-xs text-gray-400 truncate max-w-[100px]">
-              {photo.userId.name}
-            </span>
-          )} */}
-        </div>
       </div>
     </div>
   );
