@@ -9,7 +9,66 @@ import {
   Calendar,
   User,
 } from "lucide-react";
+import adminAPI from "../../api/admin.api";
 
+// ─── Watermark Hook ───────────────────────────────────────────────────────────
+const useWatermark = () => {
+  const [watermark, setWatermark] = useState(null);
+
+  useEffect(() => {
+    const fetchWatermark = async () => {
+      try {
+        const res = await adminAPI.getWatermarkSettings();
+        if (res.success && res.data?.isActive) {
+          setWatermark(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch watermark:", err);
+      }
+    };
+    fetchWatermark();
+  }, []);
+  return watermark;
+};
+
+// ─── Watermark Overlay ────────────────────────────────────────────────────────
+// Renders the watermark absolutely positioned over the image container.
+// position.x and position.y are percentages (0–100) from the API.
+const WatermarkOverlay = ({ watermark }) => {
+  if (!watermark) return null;
+
+  const { type, text, fontFamily, fontSize, color, opacity, position } =
+    watermark;
+
+  if (type !== "text" || !text) return null;
+
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none z-20"
+      style={{ overflow: "hidden" }}
+    >
+      <span
+        style={{
+          position: "absolute",
+          left: `${position.x}%`,
+          top: `${position.y}%`,
+          transform: "translate(-50%, -50%)",
+          fontFamily: fontFamily || "Impact",
+          fontSize: `${fontSize || 23}px`,
+          color: color || "#ffffff",
+          opacity: opacity ?? 1,
+          whiteSpace: "nowrap",
+          userSelect: "none",
+          textShadow: "1px 1px 3px rgba(0,0,0,0.5)",
+        }}
+      >
+        {text}
+      </span>
+    </div>
+  );
+};
+
+// ─── PhotoLightbox ────────────────────────────────────────────────────────────
 const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoom, setZoom] = useState(1);
@@ -17,14 +76,14 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
+  const watermark = useWatermark();
   const currentPhoto = photos[currentIndex];
+
   useEffect(() => {
-    // Hide overflow and navbar when lightbox opens
     document.body.style.overflow = "hidden";
     const navbar = document.querySelector("nav");
     if (navbar) navbar.style.display = "none";
 
-    // Request fullscreen
     const enterFullscreen = async () => {
       try {
         if (document.documentElement.requestFullscreen) {
@@ -40,27 +99,20 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
         console.error("Error entering fullscreen:", err);
       }
     };
-
     enterFullscreen();
 
     return () => {
       document.body.style.overflow = "auto";
       if (navbar) navbar.style.display = "block";
-
-      // Exit fullscreen
       if (document.fullscreenElement) {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        }
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
       }
     };
   }, []);
+
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (e.key === "ArrowRight") handleNext();
@@ -97,9 +149,7 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
     }
   };
 
-  const handleZoomIn = () => {
-    setZoom((prev) => Math.min(prev + 0.25, 3));
-  };
+  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.25, 3));
 
   const handleZoomOut = () => {
     setZoom((prev) => Math.max(prev - 0.25, 1));
@@ -111,32 +161,22 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
     resetPosition();
   };
 
-  const resetPosition = () => {
-    setPosition({ x: 0, y: 0 });
-  };
+  const resetPosition = () => setPosition({ x: 0, y: 0 });
 
   const handleMouseDown = (e) => {
     if (zoom > 1) {
       setIsDragging(true);
-      setDragStart({
-        x: e.clientX - position.x,
-        y: e.clientY - position.y,
-      });
+      setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
     }
   };
 
   const handleMouseMove = (e) => {
     if (isDragging && zoom > 1) {
-      setPosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      });
+      setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
     }
   };
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+  const handleMouseUp = () => setIsDragging(false);
 
   return (
     <div className="fixed inset-0 bg-black z-[9999] flex flex-col">
@@ -173,7 +213,7 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
 
       {/* Image Container */}
       <div
-        className="flex-1 flex items-center justify-center overflow-hidden"
+        className="flex-1 flex items-center justify-center overflow-hidden relative"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -182,25 +222,36 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
           cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
         }}
       >
-        <img
-          src={currentPhoto.originalUrl || currentPhoto.url}
-          alt={currentPhoto.title || "Photo"}
-          className="max-w-full max-h-full object-contain select-none"
+        {/* ── Image + Watermark wrapper: transforms together as one unit ── */}
+        <div
+          className="relative max-w-full max-h-full"
           style={{
             transform: `scale(${zoom}) translate(${position.x / zoom}px, ${
               position.y / zoom
             }px)`,
             transition: isDragging ? "none" : "transform 0.2s ease",
+            transformOrigin: "center center",
+            display: "inline-flex",
           }}
-          draggable={false}
-        />
+        >
+          <img
+            src={currentPhoto.originalUrl || currentPhoto.url}
+            alt={currentPhoto.title || "Photo"}
+            className="max-w-full max-h-full object-contain select-none block"
+            style={{ maxHeight: "100vh", maxWidth: "100vw" }}
+            draggable={false}
+          />
+
+          {/* ── Watermark sits ON the image, moves & scales with it ── */}
+          <WatermarkOverlay watermark={watermark} />
+        </div>
       </div>
 
       {/* Navigation Arrows */}
       {currentIndex > 0 && (
         <button
           onClick={handlePrevious}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition"
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition z-10"
         >
           <ChevronLeft className="w-8 h-8" />
         </button>
@@ -208,7 +259,7 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
       {currentIndex < photos.length - 1 && (
         <button
           onClick={handleNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition"
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition z-10"
         >
           <ChevronRight className="w-8 h-8" />
         </button>
@@ -227,6 +278,7 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
                 <span>
                   {currentPhoto.place.name}
                   {currentPhoto.place.city && `, ${currentPhoto.place.city}`}
+                  {currentPhoto.place.state && `, ${currentPhoto.place.state}`}
                   {currentPhoto.place.country &&
                     `, ${currentPhoto.place.country}`}
                 </span>
@@ -245,17 +297,13 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
               </div>
             )}
           </div>
-          {currentPhoto.watermark && (
-            <div className="mt-2 text-xs text-gray-400">
-              {currentPhoto.watermark}
-            </div>
-          )}
         </div>
       </div>
     </div>
   );
 };
 
+// ─── PhotoGallery ─────────────────────────────────────────────────────────────
 const PhotoGallery = ({ photos, tileSize = "medium" }) => {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(null);
   const [currentTileSize, setCurrentTileSize] = useState(tileSize);
@@ -278,36 +326,19 @@ const PhotoGallery = ({ photos, tileSize = "medium" }) => {
     <div>
       {/* Size Controls */}
       <div className="flex justify-end gap-2 mb-4">
-        <button
-          onClick={() => setCurrentTileSize("small")}
-          className={`px-3 py-1 rounded ${
-            currentTileSize === "small"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200"
-          }`}
-        >
-          Small
-        </button>
-        <button
-          onClick={() => setCurrentTileSize("medium")}
-          className={`px-3 py-1 rounded ${
-            currentTileSize === "medium"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200"
-          }`}
-        >
-          Medium
-        </button>
-        <button
-          onClick={() => setCurrentTileSize("large")}
-          className={`px-3 py-1 rounded ${
-            currentTileSize === "large"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200"
-          }`}
-        >
-          Large
-        </button>
+        {["small", "medium", "large"].map((size) => (
+          <button
+            key={size}
+            onClick={() => setCurrentTileSize(size)}
+            className={`px-3 py-1 rounded capitalize ${
+              currentTileSize === size
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            {size}
+          </button>
+        ))}
       </div>
 
       {/* Photo Grid */}
