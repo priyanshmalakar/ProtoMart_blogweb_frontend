@@ -105,7 +105,7 @@ const PhotoCard = ({ photo }) => {
   };
 
   const mediaUrl =
-    photo.thumbnailUrl ||
+    photo.originalUrl ||
     photo.watermarkedUrl ||
     photo.originalUrl;
 

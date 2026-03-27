@@ -91,11 +91,12 @@ const WatermarkSettings = () => {
       formData.append("fontFamily", settings.fontFamily || "Arial");
       formData.append("fontSize", settings.fontSize.toString());
       formData.append("color", settings.color);
+      console.log("watermarkImage state:", watermarkImage);
+console.log("Is File?", watermarkImage instanceof File);
 
-      if (watermarkImage) {
-        formData.append("watermarkImage", watermarkImage);
-        console.log("Appending file to FormData:", watermarkImage.name); // Debug
-      }
+    if (watermarkImage instanceof File) {
+  formData.append("watermarkImage", watermarkImage, watermarkImage.name);
+}
 
       console.log("formData prepared for submission:", formData);
       // ✅ Debug: Log FormData contents

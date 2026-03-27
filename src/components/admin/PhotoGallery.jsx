@@ -37,35 +37,62 @@ const useWatermark = () => {
 const WatermarkOverlay = ({ watermark }) => {
   if (!watermark) return null;
 
-  const { type, text, fontFamily, fontSize, color, opacity, position } =
-    watermark;
+  const { type, text, fontFamily, fontSize, color, opacity, position, watermarkImageUrl } = watermark;
 
-  if (type !== "text" || !text) return null;
-
-  return (
-    <div
-      className="absolute inset-0 pointer-events-none z-20"
-      style={{ overflow: "hidden" }}
-    >
-      <span
-        style={{
-          position: "absolute",
-          left: `${position.x}%`,
-          top: `${position.y}%`,
-          transform: "translate(-50%, -50%)",
-          fontFamily: fontFamily || "Impact",
-          fontSize: `${fontSize || 23}px`,
-          color: color || "#ffffff",
-          opacity: opacity ?? 1,
-          whiteSpace: "nowrap",
-          userSelect: "none",
-          textShadow: "1px 1px 3px rgba(0,0,0,0.5)",
-        }}
+  if (type === "image" && watermarkImageUrl) {
+    return (
+      <div
+        className="absolute inset-0 pointer-events-none z-20"
+        style={{ overflow: "hidden" }}
       >
-        {text}
-      </span>
-    </div>
-  );
+        <img
+          src={watermarkImageUrl}
+          alt="watermark"
+          style={{
+            position: "absolute",
+            left: `${position.x}%`,
+            top: `${position.y}%`,
+            transform: "translate(-50%, -50%)",
+            opacity: opacity ?? 1,
+            maxWidth: "20%",
+            maxHeight: "20%",
+            objectFit: "contain",
+            userSelect: "none",
+            pointerEvents: "none",
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (type === "text" && text) {
+    return (
+      <div
+        className="absolute inset-0 pointer-events-none z-20"
+        style={{ overflow: "hidden" }}
+      >
+        <span
+          style={{
+            position: "absolute",
+            left: `${position.x}%`,
+            top: `${position.y}%`,
+            transform: "translate(-50%, -50%)",
+            fontFamily: fontFamily || "Impact",
+            fontSize: `${fontSize || 23}px`,
+            color: color || "#ffffff",
+            opacity: opacity ?? 1,
+            whiteSpace: "nowrap",
+            userSelect: "none",
+            textShadow: "1px 1px 3px rgba(0,0,0,0.5)",
+          }}
+        >
+          {text}
+        </span>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 // ─── PhotoLightbox ────────────────────────────────────────────────────────────
@@ -149,12 +176,11 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
     }
   };
 
-  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.25, 3));
-
-  const handleZoomOut = () => {
-    setZoom((prev) => Math.max(prev - 0.25, 1));
-    if (zoom <= 1.25) resetPosition();
-  };
+const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.5, 8));
+const handleZoomOut = () => {
+  setZoom((prev) => Math.max(prev - 0.5, 0.5));
+  if (zoom <= 1) resetPosition();
+};
 
   const resetZoom = () => {
     setZoom(1);
@@ -190,7 +216,7 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
             <button
               onClick={handleZoomOut}
               className="text-white hover:bg-white/20 p-2 rounded-lg transition"
-              disabled={zoom <= 1}
+           disabled={zoom <= 1}
             >
               <ZoomOut className="w-6 h-6" />
             </button>
