@@ -91,12 +91,12 @@ const LoginPage = () => {
       <div className="relative z-10 w-full max-w-xl px-4">
         {/* Header Badge */}
         <div className="text-center my-8 animate-fade-in">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-full px-6 py-2 mb-4 backdrop-blur-sm">
+          {/* <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-full px-6 py-2 mb-4 backdrop-blur-sm">
             <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
             <span className="text-sm font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               Welcome Back
             </span>
-          </div>
+          </div> */}
 
           <h1 className="text-2xl md:text-4xl font-black mb-4 leading-tight">
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient-x">

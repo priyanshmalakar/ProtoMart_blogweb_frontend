@@ -1,6 +1,6 @@
 import { Camera, Mail, MapPin } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-
+import logo from '../../assets/logo.jpeg'
 const Footer = () => {
   const navigate = useNavigate()
 
@@ -11,8 +11,9 @@ const Footer = () => {
           {/* About */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <Camera className="w-6 h-6" />
-              <span className="text-xl font-bold">TravelPhotos</span>
+              {/* <Camera className="w-6 h-6" />
+              <span className="text-xl font-bold">TravelPhotos</span> */}
+<img src={logo} alt="Travel Photos.com" className="h-12 w-14" />
             </div>
             <p className="text-gray-400">
               Share your travel moments and discover amazing places around the world.
