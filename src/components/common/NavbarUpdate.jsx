@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
+import logo from "../../assets/logo.jpeg";
 import {
   Menu,
   X,
@@ -49,12 +50,13 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-12">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <span
+            {/* <span
               className="text-2xl font-bold text-white"
               style={{ fontFamily: "Brush Script MT, cursive" }}
             >
               Travel Photos.com
-            </span>
+            </span> */}
+            <img src={logo} alt="Travel Photos.com" className="h-12 w-12" />
           </Link>
 
           {/* Desktop Navigation */}

@@ -32,8 +32,6 @@ const useWatermark = () => {
 };
 
 // ─── Watermark Overlay ────────────────────────────────────────────────────────
-// Renders the watermark absolutely positioned over the image container.
-// position.x and position.y are percentages (0–100) from the API.
 const WatermarkOverlay = ({ watermark }) => {
   if (!watermark) return null;
 
@@ -102,6 +100,8 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [lastTouchDistance, setLastTouchDistance] = useState(null);
+  const [touchStart, setTouchStart] = useState(null);
 
   const watermark = useWatermark();
   const currentPhoto = photos[currentIndex];
@@ -176,11 +176,14 @@ const PhotoLightbox = ({ photos, initialIndex, onClose }) => {
     }
   };
 
-const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.5, 8));
-const handleZoomOut = () => {
-  setZoom((prev) => Math.max(prev - 0.5, 0.5));
-  if (zoom <= 1) resetPosition();
-};
+  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.5, 8));
+  const handleZoomOut = () => {
+    setZoom((prev) => {
+      const next = Math.max(prev - 0.5, 0.5);
+      if (next <= 1) resetPosition();
+      return next;
+    });
+  };
 
   const resetZoom = () => {
     setZoom(1);
@@ -189,6 +192,7 @@ const handleZoomOut = () => {
 
   const resetPosition = () => setPosition({ x: 0, y: 0 });
 
+  // ─── Mouse Handlers ───────────────────────────────────────────────────────
   const handleMouseDown = (e) => {
     if (zoom > 1) {
       setIsDragging(true);
@@ -204,6 +208,51 @@ const handleZoomOut = () => {
 
   const handleMouseUp = () => setIsDragging(false);
 
+  // ─── Touch Helpers ────────────────────────────────────────────────────────
+  const getTouchDistance = (touches) => {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  // ─── Touch Handlers ───────────────────────────────────────────────────────
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 2) {
+      setLastTouchDistance(getTouchDistance(e.touches));
+    } else if (e.touches.length === 1 && zoom > 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.touches[0].clientX - position.x,
+        y: e.touches[0].clientY - position.y,
+      });
+      setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+      const newDistance = getTouchDistance(e.touches);
+      if (lastTouchDistance !== null) {
+        const delta = newDistance - lastTouchDistance;
+        const scaleFactor = delta * 0.01;
+        setZoom((prev) => Math.min(Math.max(prev + scaleFactor, 0.5), 8));
+      }
+      setLastTouchDistance(newDistance);
+    } else if (e.touches.length === 1 && isDragging && zoom > 1) {
+      setPosition({
+        x: e.touches[0].clientX - dragStart.x,
+        y: e.touches[0].clientY - dragStart.y,
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setLastTouchDistance(null);
+    setIsDragging(false);
+    setTouchStart(null);
+  };
+
   return (
     <div className="fixed inset-0 bg-black z-[9999] flex flex-col">
       {/* Header Controls */}
@@ -216,14 +265,14 @@ const handleZoomOut = () => {
             <button
               onClick={handleZoomOut}
               className="text-white hover:bg-white/20 p-2 rounded-lg transition"
-           disabled={zoom <= 1}
+              disabled={zoom <= 1}
             >
               <ZoomOut className="w-6 h-6" />
             </button>
             <button
               onClick={handleZoomIn}
               className="text-white hover:bg-white/20 p-2 rounded-lg transition"
-              disabled={zoom >= 3}
+              disabled={zoom >= 8}
             >
               <ZoomIn className="w-6 h-6" />
             </button>
@@ -239,16 +288,19 @@ const handleZoomOut = () => {
 
       {/* Image Container */}
       <div
-        className="flex-1 flex items-center justify-center overflow-hidden relative"
+        className="flex-1 flex items-center justify-center overflow-hidden relative touch-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         style={{
           cursor: zoom > 1 ? (isDragging ? "grabbing" : "grab") : "default",
         }}
       >
-        {/* ── Image + Watermark wrapper: transforms together as one unit ── */}
+        {/* ── Image + Watermark wrapper ── */}
         <div
           className="relative max-w-full max-h-full"
           style={{
@@ -268,7 +320,7 @@ const handleZoomOut = () => {
             draggable={false}
           />
 
-          {/* ── Watermark sits ON the image, moves & scales with it ── */}
+          {/* ── Watermark sits ON the image ── */}
           <WatermarkOverlay watermark={watermark} />
         </div>
       </div>
